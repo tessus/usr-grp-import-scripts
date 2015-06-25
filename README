@@ -1,61 +1,60 @@
-$Id: README,v 1.2 2006/02/25 17:58:04 tessus Exp $
-
-Copyright (c) 2006 Helmut K. C. Tessarek
-written by Helmut K. C. Tessarek
-
-http://mod-auth-ibmdb2.sourceforge.net
-
-Contents:
----------
-
-1)  Description of the scripts
-2)  File Description
++----------------------------------------------------------------------+
+| user and group import scripts                                 README |
++----------------------------------------------------------------------+
+| Author: Helmut K. C. Tessarek                                        |
++----------------------------------------------------------------------+
+| Website: https://github.com/tessus/usr-grp-import-scripts            |
++----------------------------------------------------------------------+
 
 1) Description of the scripts
------------------------------
+2) File Description
+
++----------------------------------------------------------------------+
+| 1. Description of the scripts                                        |
++----------------------------------------------------------------------+
 
 These are php scripts to import the users and groups from already existing
 user and/or group files into DB2.
 
-The sync_pwds script is for syncing the system passwords with the user table in
-the database.
+The sync_pwds script is for syncing the system passwords with the user table
+in the database.
 
 You have to change the settings in the config.php file for your environment.
 
-Here is a table of the relation between the directives for the mod_auth_ibmdb2 module
-and the settings in the config.php file:
+Here is a table of the relation between the directives for the
+mod_auth(nz)_ibmdb2 module and the settings in the config.php file:
 
-config.php					module directive
+config.php                             module directive
 
-$dbname = "auth";				AuthIBMDB2Database
-$dbuser = "db2inst1";				AuthIBMDB2User
-$dbpwd  = "db2inst1";				AuthIBMDB2Password
+$dbname = "auth";                      AuthIBMDB2Database
+$dbuser = "db2inst1";                  AuthIBMDB2User
+$dbpwd  = "db2inst1";                  AuthIBMDB2Password
 
-$usertable  = "users";				AuthIBMDB2UserTable
-$grouptable = "groups";				AuthIBMDB2GroupTable
+$usertable  = "users";                 AuthIBMDB2UserTable
+$grouptable = "groups";                AuthIBMDB2GroupTable
 
-$namefield     = "username";			AuthIBMDB2NameField	
-$passwordfield = "password";			AuthIBMDB2PasswordField		
-$groupfield    = "groupname";			AuthIBMDB2GroupField		
+$namefield     = "username";           AuthIBMDB2NameField
+$passwordfield = "password";           AuthIBMDB2PasswordField
+$groupfield    = "groupname";          AuthIBMDB2GroupField
 
 As an example:
 
 If the settings in the config.php are as above and you execute the
 user_imp script following happens:
 
-All users (except system users) are imported from the linux box into the 
+All users (except system users) are imported from the linux box into the
 table 'users' in the database 'auth'.
 The table 'users' has 'username' as the columnname for the users and
 'password' as the columnname for the passwords.
 
++----------------------------------------------------------------------+
+| 2. File Description                                                  |
++----------------------------------------------------------------------+
 
-2) File Description
--------------------
-
-user_imp		import users from htpasswd generated user file
-group_imp		import users from standard group file (Apache)
-user_etc_imp		import users from system (/etc/shadow)
-group_etc_imp		import groups from system (/etc/...)
-sync_pwds		sync system users
-config.php		config file for all scripts
-README			this file
+user_imp            import users from htpasswd generated user file
+group_imp           import users from standard group file (Apache)
+user_etc_imp        import users from system (/etc/shadow)
+group_etc_imp       import groups from system (/etc/...)
+sync_pwds           sync system users
+config.php          config file for all scripts
+README              this file
