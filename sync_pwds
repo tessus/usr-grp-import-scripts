@@ -1,0 +1,71 @@
+#!/usr/local/bin/php
+<?php
+
+// $Id: sync_pwds,v 1.2 2006/02/25 17:58:04 tessus Exp $
+
+putenv ("DB2DIR=/opt/IBM/db2/V8.1");
+putenv ("DB2INSTANCE=db2inst1");
+putenv ("LD_LIBRARY_PATH=:/home/db2inst1/sqllib/lib");
+putenv ("LIBPATH=:/home/db2inst1/sqllib/lib");
+
+require ('./config.php');
+
+$handle = fopen ("/etc/shadow", "r");
+
+while (!feof ($handle)) 
+{
+    $line = fgets($handle, 512);
+    
+    list($username,$password) = explode(":",$line);
+    
+    if( $username != '' && $username != 'root' && $password != '*' && $password != '!!')
+    {
+       $arr["$username"] = $password;
+    }
+}
+    
+fclose ($handle);
+
+$conn = odbc_connect( $dbname, $dbuser, $dbpwd );
+
+echo "\nSyncing system users with table '$usertable' in database '$dbname'\n\n";
+
+$i = 0;
+$ni = 0;
+
+foreach ($arr as $u => $p)
+{
+   $insert = "insert into $usertable ($namefield, $passwordfield) values ('$u', '$p')";
+   $res=@odbc_exec( $conn, $insert );
+      
+   if( $res != FALSE )
+   {
+      echo "User $u synced.\n";
+      $i++;
+   }
+   else
+   {
+      $update = "update $usertable set ($passwordfield) = ('$p') where $namefield = '$u'";
+      $res=@odbc_exec( $conn, $update );
+      
+      if( $res != FALSE )
+      {
+         echo "User $u synced.\n";
+         $i++;
+      }
+      else
+      {
+         echo "User $u NOT synced.\n";
+         $ni++;
+      }
+   }   
+}
+
+echo "\n";
+echo "Users synced: $i\n";
+echo "Users rejected: $ni\n";
+echo "\n";
+
+return 0;
+
+?>
