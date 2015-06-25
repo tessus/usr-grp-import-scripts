@@ -1,8 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-// $Id: group_imp,v 1.2 2006/02/25 17:58:04 tessus Exp $
-
 if( $argc != 2 )
 {
    echo "\nUsage: group_imp GROUP-FILE\n";

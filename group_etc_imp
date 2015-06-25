@@ -1,8 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-// $Id: group_etc_imp,v 1.2 2006/02/25 17:58:04 tessus Exp $
-
 putenv ("DB2DIR=/opt/IBM/db2/V8.1");
 putenv ("DB2INSTANCE=db2inst1");
 putenv ("LD_LIBRARY_PATH=:/home/db2inst1/sqllib/lib");
