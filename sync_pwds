@@ -1,4 +1,4 @@
-#!/usr/local/bin/php
+#!/usr/bin/env php
 <?php
 
 // $Id: sync_pwds,v 1.2 2006/02/25 17:58:04 tessus Exp $
@@ -12,18 +12,18 @@ require ('./config.php');
 
 $handle = fopen ("/etc/shadow", "r");
 
-while (!feof ($handle)) 
+while (!feof ($handle))
 {
     $line = fgets($handle, 512);
-    
+
     list($username,$password) = explode(":",$line);
-    
+
     if( $username != '' && $username != 'root' && $password != '*' && $password != '!!')
     {
        $arr["$username"] = $password;
     }
 }
-    
+
 fclose ($handle);
 
 $conn = odbc_connect( $dbname, $dbuser, $dbpwd );
@@ -37,7 +37,7 @@ foreach ($arr as $u => $p)
 {
    $insert = "insert into $usertable ($namefield, $passwordfield) values ('$u', '$p')";
    $res=@odbc_exec( $conn, $insert );
-      
+
    if( $res != FALSE )
    {
       echo "User $u synced.\n";
@@ -47,7 +47,7 @@ foreach ($arr as $u => $p)
    {
       $update = "update $usertable set ($passwordfield) = ('$p') where $namefield = '$u'";
       $res=@odbc_exec( $conn, $update );
-      
+
       if( $res != FALSE )
       {
          echo "User $u synced.\n";
@@ -58,7 +58,7 @@ foreach ($arr as $u => $p)
          echo "User $u NOT synced.\n";
          $ni++;
       }
-   }   
+   }
 }
 
 echo "\n";

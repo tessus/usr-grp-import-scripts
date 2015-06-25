@@ -1,4 +1,4 @@
-#!/usr/local/bin/php
+#!/usr/bin/env php
 <?php
 
 // $Id: group_imp,v 1.2 2006/02/25 17:58:04 tessus Exp $
@@ -7,21 +7,21 @@ if( $argc != 2 )
 {
    echo "\nUsage: group_imp GROUP-FILE\n";
    echo "\n   GROUP-FILE	group file\n\n";
-   
+
    exit(1);
 }
 
 if( !file_exists( $argv[1] ) )
 {
    echo "\n$argv[1] does not exist!\n\n";
-   
+
    exit(1);
 }
 
 if( !is_readable( $argv[1] ) )
 {
    echo "\n$argv[1] is not readable!\n\n";
-   
+
    exit(1);
 }
 
@@ -34,22 +34,22 @@ require ('./config.php');
 
 $handle = fopen ($argv[1], "r");
 
-while (!feof ($handle)) 
+while (!feof ($handle))
 {
     $line = fgets($handle, 512);
-    
+
     list($groupname,$users) = explode(":",$line);
-    
+
     if( $groupname != '' )
     {
        $users = substr($users,1);
        if( substr( $users, -1 ) == "\n" )
           $users = substr($users,0,-1);
-    
+
        $ar["$groupname"] = explode(" ", $users);
     }
 }
-    
+
 fclose ($handle);
 
 $conn = db2_connect( $dbname, $dbuser, $dbpwd );
@@ -59,14 +59,14 @@ echo "\nImporting groups into table '$grouptable' in database '$dbname'\n\n";
 $i = 0;
 $ni = 0;
 
-foreach ($ar as $groupname => $users) 
+foreach ($ar as $groupname => $users)
 {
    foreach( $users as $username )
    {
-           
+
       $insert = "insert into $grouptable ($namefield, $groupfield) values ('$username', '$groupname')";
       $res=@db2_exec( $conn, $insert );
-         
+
       if( $res != FALSE )
       {
          echo "User '$username' in group '$groupname' imported.\n";
@@ -77,7 +77,7 @@ foreach ($ar as $groupname => $users)
          echo "User '$username' in group '$groupname' NOT imported.\n";
          $ni++;
       }
-      
+
    }
 }
 
@@ -85,7 +85,7 @@ echo "\n";
 echo "Users/Groups imported: $i\n";
 echo "Users/Groups rejected: $ni\n";
 echo "\n";
-        
+
 return 0;
 
 ?>

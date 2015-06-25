@@ -1,4 +1,4 @@
-#!/usr/local/bin/php
+#!/usr/bin/env php
 <?php
 
 // $Id: group_etc_imp,v 1.2 2006/02/25 17:58:04 tessus Exp $
@@ -14,49 +14,49 @@ $handle = fopen ("/etc/gshadow", "r");
 $hp = fopen ("/etc/passwd", "r");
 $hg = fopen ("/etc/group", "r");
 
-while (!feof ($handle)) 
+while (!feof ($handle))
 {
     $line = fgets($handle, 512);
-    
+
     list($groupname,$a,$b,$users) = explode(":",$line);
-    
+
     if( $a != '' && $a != 'x' )
     {
        fseek($hg,0);
        while (!feof ($hg))
        {
           $gline = fgets($hg, 512);
-          
+
           list($gname,$c,$gnumber) = explode(":",$gline);
-          
+
           if($gname == $groupname)
              $garr["$groupname"] = $gnumber;
        }
-       
+
        fseek($hp,0);
        while (!feof ($hp))
        {
           $pline = fgets($hp, 512);
-               
+
           list($uname,$d,$e,$maingroup) = explode(":",$pline);
-                 
+
           if($maingroup == $garr["$groupname"])
              $parr["$groupname"] = $uname;
        }
-       
+
        if( substr( $users, -1 ) == "\n" )
           $users = substr($users,0,-1);
-       
+
        if( strlen($users) != 0 )
           $arr["$groupname"] = $users.",".$parr["$groupname"];
        else
           $arr["$groupname"] = $parr["$groupname"];
-          
+
        $ar["$groupname"] = explode(",", $arr["$groupname"]);
-    
+
     }
 }
-    
+
 fclose ($handle);
 
 $conn = db2_connect( $dbname, $dbuser, $dbpwd );
@@ -66,14 +66,14 @@ echo "\nImporting groups into table '$grouptable' in database '$dbname'\n\n";
 $i = 0;
 $ni = 0;
 
-foreach ($ar as $groupname => $users) 
+foreach ($ar as $groupname => $users)
 {
    foreach( $users as $username )
    {
-           
+
       $insert = "insert into $grouptable ($namefield, $groupfield) values ('$username', '$groupname')";
       $res=@db2_exec( $conn, $insert );
-         
+
       if( $res != FALSE )
       {
          echo "User '$username' in group '$groupname' imported.\n";
@@ -84,7 +84,7 @@ foreach ($ar as $groupname => $users)
          echo "User '$username' in group '$groupname' NOT imported.\n";
          $ni++;
       }
-      
+
    }
 }
 
@@ -92,7 +92,7 @@ echo "\n";
 echo "Users/Groups imported: $i\n";
 echo "Users/Groups rejected: $ni\n";
 echo "\n";
-        
+
 return 0;
 
 ?>

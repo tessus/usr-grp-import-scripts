@@ -1,4 +1,4 @@
-#!/usr/local/bin/php
+#!/usr/bin/env php
 <?php
 
 // $Id: user_etc_imp,v 1.2 2006/02/25 17:58:04 tessus Exp $
@@ -12,18 +12,18 @@ require ('./config.php');
 
 $handle = fopen ("/etc/shadow", "r");
 
-while (!feof ($handle)) 
+while (!feof ($handle))
 {
     $line = fgets($handle, 512);
-    
+
     list($username,$password) = explode(":",$line);
-    
+
     if( $username != '' && $username != 'root' && $password != '*' && $password != '!!')
     {
        $arr["$username"] = $password;
     }
 }
-    
+
 fclose ($handle);
 
 $conn = db2_connect( $dbname, $dbuser, $dbpwd );
@@ -37,7 +37,7 @@ foreach ($arr as $u => $p)
 {
    $insert = "insert into $usertable ($namefield, $passwordfield) values ('$u', '$p')";
    $res=@db2_exec( $conn, $insert );
-   
+
    if( $res != FALSE )
    {
       echo "User $u imported.\n";
