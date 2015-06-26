@@ -93,7 +93,7 @@ echo "Users/Groups rejected: $ni\n";
 echo "\n";
 
 if ($ni > 0)
-	exit(1);
+	exit(2);
 else
 	exit(0);
 
