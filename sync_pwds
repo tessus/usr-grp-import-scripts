@@ -1,30 +1,32 @@
 #!/usr/bin/env php
 <?php
 
-putenv ("DB2DIR=/opt/IBM/db2/V8.1");
-putenv ("DB2INSTANCE=db2inst1");
-putenv ("LD_LIBRARY_PATH=:/home/db2inst1/sqllib/lib");
-putenv ("LIBPATH=:/home/db2inst1/sqllib/lib");
-
 require ('./config.php');
 
-$handle = fopen ("/etc/shadow", "r");
-
-while (!feof ($handle))
+if (!ini_get('ibm_db2.instance_name'))
 {
-    $line = fgets($handle, 512);
-
-    list($username,$password) = explode(":",$line);
-
-    if( $username != '' && $username != 'root' && $password != '*' && $password != '!!')
-    {
-       $arr["$username"] = $password;
-    }
+	echo "ibm_db2.instance_name not set in php.ini\n";
+	exit(1);
 }
 
-fclose ($handle);
+$handle = fopen("/etc/shadow", "r");
 
-$conn = odbc_connect( $dbname, $dbuser, $dbpwd );
+while (!feof($handle))
+{
+	$line = fgets($handle, 512);
+
+	if ($line)
+		list($username, $password) = explode(":", $line);
+
+	if ($username != '' && $username != 'root' && $password != '*' && $password != '!!')
+	{
+		$arr["$username"] = $password;
+	}
+}
+
+fclose($handle);
+
+$conn = db2_connect($dbname, $dbuser, $dbpwd);
 
 echo "\nSyncing system users with table '$usertable' in database '$dbname'\n\n";
 
@@ -33,30 +35,30 @@ $ni = 0;
 
 foreach ($arr as $u => $p)
 {
-   $insert = "insert into $usertable ($namefield, $passwordfield) values ('$u', '$p')";
-   $res=@odbc_exec( $conn, $insert );
+	$insert = "insert into $usertable ($namefield, $passwordfield) values ('$u', '$p')";
+	$res = @db2_exec($conn, $insert);
 
-   if( $res != FALSE )
-   {
-      echo "User $u synced.\n";
-      $i++;
-   }
-   else
-   {
-      $update = "update $usertable set ($passwordfield) = ('$p') where $namefield = '$u'";
-      $res=@odbc_exec( $conn, $update );
+	if ($res != FALSE)
+	{
+		echo "User $u synced.\n";
+		$i++;
+	}
+	else
+	{
+		$update = "update $usertable set ($passwordfield) = ('$p') where $namefield = '$u'";
+		$res = @db2_exec($conn, $update);
 
-      if( $res != FALSE )
-      {
-         echo "User $u synced.\n";
-         $i++;
-      }
-      else
-      {
-         echo "User $u NOT synced.\n";
-         $ni++;
-      }
-   }
+		if ($res != FALSE)
+		{
+			echo "User $u synced.\n";
+			$i++;
+		}
+		else
+		{
+			echo "User $u NOT synced.\n";
+			$ni++;
+		}
+	}
 }
 
 echo "\n";
@@ -64,6 +66,9 @@ echo "Users synced: $i\n";
 echo "Users rejected: $ni\n";
 echo "\n";
 
-return 0;
+if ($ni > 0)
+	exit(1);
+else
+	exit(0);
 
 ?>
